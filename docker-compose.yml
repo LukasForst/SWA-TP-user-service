@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lukaswire/swa-user-service
+    container_name: user-service
+    env_file:
+      - .env
+    ports:
+      - 8080:8080
+    depends_on:
+      - user-service-db
+    networks:
+      - user-service-net
+
+  user-service-db:
+    image: postgres:12.2
+    container_name: user-service-db
+    env_file: 
+      - .env
+    ports:
+      - 5432:5432
+    networks:
+      - user-service-net
+    volumes:
+      - user-service-db-vol:/var/lib/postgresql/data/
+
+
+networks:
+  user-service-net:
+    driver: bridge
+
+volumes:
+  user-service-db-vol:

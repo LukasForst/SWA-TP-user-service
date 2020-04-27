@@ -1,10 +1,10 @@
 import logging
 
-from flask import jsonify, request, make_response
+from flask import jsonify, request
 from flask_restx import Namespace, Resource, fields
 
 from common.Db import db
-from services.Crypto import encode_auth_token, compare_passwords
+from services.Crypto import encode_auth_token, compare_passwords, decode_auth_token
 from services.User import User
 
 logger = logging.getLogger(__name__)
@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 user_api = Namespace('user')
 
 
-@user_api.route('register', methods=['PUT'])
+@user_api.route('/register', methods=['PUT'])
 class RegistrationApi(Resource):
-    dummy_model = user_api.model('UserRegistration', {
+    registration_model = user_api.model('UserRegistration', {
         'first_name': fields.String(required=True, description='First name.'),
         'last_name': fields.String(required=True, description='Surname.'),
         'email': fields.String(required=True, description='Email used for authentication.'),
@@ -22,7 +22,7 @@ class RegistrationApi(Resource):
     })
 
     @user_api.doc(
-        body=dummy_model
+        body=registration_model
     )
     def put(self):
         # get the post data
@@ -47,30 +47,30 @@ class RegistrationApi(Resource):
                     'message': 'Successfully registered.',
                     'auth_token': auth_token.decode()
                 }
-                return make_response(jsonify(responseObject)), 201
+                return jsonify(responseObject)
             except Exception as e:
                 responseObject = {
                     'status': 'fail',
                     'message': 'Some error occurred. Please try again.'
                 }
-                return make_response(jsonify(responseObject)), 401
+                return jsonify(responseObject)
         else:
             responseObject = {
                 'status': 'fail',
                 'message': 'User already exists. Please Log in.',
             }
-            return make_response(jsonify(responseObject)), 202
+            return jsonify(responseObject)
 
 
-@user_api.route('login', methods=['POST'])
+@user_api.route('/login', methods=['POST'])
 class LoginApi(Resource):
-    dummy_model = user_api.model('UserLogin', {
+    login_model = user_api.model('UserLogin', {
         'email': fields.String(required=True, description='Email of the user to login.'),
         'password': fields.String(required=True, description='Users password.')
     })
 
     @user_api.doc(
-        body=dummy_model
+        body=login_model
     )
     def post(self):
         # get the post data
@@ -79,20 +79,20 @@ class LoginApi(Resource):
             # fetch the user data
             user = User.query.filter_by(email=post_data.get('email')).first()
             if user and compare_passwords(user.password, post_data.get('password')):
-                auth_token = user.encode_auth_token(user.id)
+                auth_token = encode_auth_token(user)
                 if auth_token:
                     responseObject = {
                         'status': 'success',
                         'message': 'Successfully logged in.',
                         'auth_token': auth_token.decode()
                     }
-                    return make_response(jsonify(responseObject)), 200
+                    return jsonify(responseObject)
             else:
                 responseObject = {
                     'status': 'fail',
                     'message': 'User does not exist.'
                 }
-                return make_response(jsonify(responseObject)), 401
+                return jsonify(responseObject)
 
         except Exception as e:
             logger.error(e)
@@ -100,4 +100,55 @@ class LoginApi(Resource):
                 'status': 'fail',
                 'message': 'Try again'
             }
-            return make_response(jsonify(responseObject)), 500
+            return jsonify(responseObject)
+
+
+@user_api.route('', methods=['GET'])
+class UserAPI(Resource):
+    status = user_api.model('UserInfo', {
+        'status': fields.String(required=True, description='Indication of successful auth..', enum=['fail', 'success'])
+    })
+
+    @user_api.response(code=200, model=status, description="Returns ok if service is healthy.")
+    @user_api.doc(
+        security='bearer'
+    )
+    def get(self):
+        # get the auth token
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            try:
+                auth_token = auth_header.split(" ")[1]
+            except Exception:
+                responseObject = {
+                    'status': 'fail',
+                    'message': 'Bearer token malformed.'
+                }
+                return jsonify(responseObject)
+        else:
+            auth_token = ''
+
+        if auth_token:
+            user_id, error = decode_auth_token(auth_token)
+            if user_id:
+                user = User.query.filter_by(id=user_id).first()
+                responseObject = {
+                    'status': 'success',
+                    'data': {
+                        'user_id': user.id,
+                        'email': user.email
+                    }
+                }
+                return jsonify(responseObject)
+
+            responseObject = {
+                'status': 'fail',
+                'message': error
+            }
+            return jsonify(responseObject)
+        else:
+            responseObject = {
+                'status': 'fail',
+                'message': 'Provide a valid auth token.'
+            }
+            return jsonify(responseObject)

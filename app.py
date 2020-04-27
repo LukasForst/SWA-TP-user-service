@@ -41,7 +41,7 @@ api = Api(app, authorizations=authorizations)
 
 api.add_namespace(version_api, path='/')
 api.add_namespace(status_api, path='/')
-api.add_namespace(user_api, path='/')
+api.add_namespace(user_api, path='/user')
 
 # Load configuration
 config_file = 'local_config'

@@ -2,13 +2,11 @@ import datetime
 from typing import Tuple, Optional
 
 import jwt
-from flask import current_app
 from flask_bcrypt import Bcrypt
 
 from common.Config import get_config
-from services import User
 
-bcrypt = Bcrypt(current_app)
+bcrypt = Bcrypt()
 
 
 def encode_password(password: str) -> str:
@@ -19,7 +17,7 @@ def compare_passwords(pwd_hash: str, password: str) -> bool:
     return bcrypt.check_password_hash(pwd_hash, password)
 
 
-def encode_auth_token(user: User) -> bytearray:
+def encode_auth_token(user) -> bytearray:
     """
     Generates the Auth Token
     """

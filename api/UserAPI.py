@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 user_api = Namespace('user')
 
 
-@user_api.route('/register', methods=['PUT'])
+@user_api.route('register', methods=['PUT'])
 class RegistrationApi(Resource):
     dummy_model = user_api.model('UserRegistration', {
         'first_name': fields.String(required=True, description='First name.'),
@@ -24,7 +24,7 @@ class RegistrationApi(Resource):
     @user_api.doc(
         body=dummy_model
     )
-    def post(self):
+    def put(self):
         # get the post data
         post_data = request.get_json()
         # check if user already exists
@@ -62,7 +62,7 @@ class RegistrationApi(Resource):
             return make_response(jsonify(responseObject)), 202
 
 
-@user_api.route('/login', methods=['POST'])
+@user_api.route('login', methods=['POST'])
 class LoginApi(Resource):
     dummy_model = user_api.model('UserLogin', {
         'email': fields.String(required=True, description='Email of the user to login.'),
@@ -70,7 +70,6 @@ class LoginApi(Resource):
     })
 
     @user_api.doc(
-        security='bearer',
         body=dummy_model
     )
     def post(self):

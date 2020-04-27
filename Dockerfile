@@ -1,6 +1,5 @@
-FROM python:3.7-alpine AS base
+FROM python:3.7-slim AS base
 # install postgre driver
-RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
 RUN pip install psycopg2-binary
 
 # ----------- download python dependencies -----------

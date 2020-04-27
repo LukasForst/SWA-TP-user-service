@@ -3,15 +3,18 @@ import sys
 from importlib import util as importing
 
 from flask import Flask
+from flask_migrate import Migrate
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from api.StatusApi import status_api
+from api.UserAPI import user_api
 from api.VersionApi import version_api
 from common.Config import get_config
 from common.Db import db
-
 # Setup logging
+from services.Crypto import bcrypt
+
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',
                     stream=sys.stdout)
 logger = logging.getLogger(__name__)
@@ -20,6 +23,8 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 # fix for https swagger - see https://github.com/python-restx/flask-restx/issues/58
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_port=1, x_for=1, x_host=1, x_prefix=1)
+# iniciate encryption
+bcrypt.init_app(app)
 
 # Set up Swagger and API
 authorizations = {
@@ -36,9 +41,10 @@ api = Api(app, authorizations=authorizations)
 
 api.add_namespace(version_api, path='/')
 api.add_namespace(status_api, path='/')
+api.add_namespace(user_api, path='/')
 
 # Load configuration
-config_file = 'config'
+config_file = 'local_config'
 if importing.find_spec(config_file):
     app.config.from_object(config_file)
 
@@ -53,6 +59,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] \
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
+migrate = Migrate(app, db)
 
 # App startup
 if __name__ == '__main__':

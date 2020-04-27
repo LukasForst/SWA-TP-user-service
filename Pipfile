@@ -11,6 +11,9 @@ flask-restx = "*"
 requests = "*"
 dacite = "*"
 gunicorn = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
+flask-sqlalchemy = "*"
 
 [requires]
 python_version = "3.7"

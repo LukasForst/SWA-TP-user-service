@@ -1,9 +1,9 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import Optional
+from typing import Callable
 
-from flask import current_app as app
+from flask import current_app as app, g
 
 logger = logging.getLogger(__name__)
 

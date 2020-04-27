@@ -8,7 +8,7 @@ publish: docker-build
 	docker push lukaswire/swa-user-service
 
 db:
-	docker-compose up -d db
+	docker-compose up -d user-service-db
 
 up:
 	docker-compose up

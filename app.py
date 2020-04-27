@@ -6,11 +6,10 @@ from flask import Flask
 from flask_restx import Api
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from api.StatusApi import status_api
+from api.VersionApi import version_api
 from common.Config import get_config
 from common.Db import db
-
-from services.StatusApi import status_api
-from services.VersionApi import version_api
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] - %(levelname)s - %(module)s: %(message)s',

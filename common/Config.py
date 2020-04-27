@@ -15,6 +15,8 @@ class Config:
     postgres_db: str
     postgres_url: str
 
+    jwt_secret: str
+
 
 def get_config() -> Config:
     """
@@ -28,10 +30,11 @@ def build_configuration() -> Config:
     Builds configuration from environment or from the Flask properties
     """
     logger.debug('Building configuration.')
-    config = Config(postgres_user=get_prop('POSTGRES_USER', True),
-                    postgres_password=get_prop('POSTGRES_PASSWORD', True),
-                    postgres_db=get_prop('POSTGRES_DB', True),
-                    postgres_url=get_prop('POSTGRES_URL', True))
+    config = Config(postgres_user=get_prop('POSTGRES_USER'),
+                    postgres_password=get_prop('POSTGRES_PASSWORD'),
+                    postgres_db=get_prop('POSTGRES_DB'),
+                    postgres_url=get_prop('POSTGRES_URL'),
+                    jwt_secret=get_prop('JWT_SECRET'))
     logger.debug(f'Used configuration: {config}')
     return config
 

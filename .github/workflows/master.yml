@@ -11,13 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+
       - uses: dschep/install-pipenv-action@v1
 
-      - run: pipenv install
+      - run: pipenv lock -r > requirements.txt
+      - run: pip install -r requirements.txt
 
       - run: python -m doctest -v services/Crypto.py
-
   publish:
     needs: check
     name: Build and publish docker image

@@ -12,6 +12,9 @@ For persistence, this service has its own PostgreSQL database.
 ## API
 To test API, one can use pregenerated Swagger UI running on `localhost:8080`.
 
+### Contract Tests
+For contract tests refer to https://github.com/LukasForst/SWA-TP-user-service-contract-tests 
+
 ## Monitoring
 The service contains `/metrics` endpoint for Prometheus scraping.
 This endpoint is enabled only when the service uses `gunicorn` as its server (i.e. while running in production/docker).

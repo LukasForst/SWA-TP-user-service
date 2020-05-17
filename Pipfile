@@ -17,6 +17,7 @@ flask-sqlalchemy = "*"
 flask-bcrypt = "*"
 pyjwt = "*"
 flask-migrate = "*"
+prometheus-flask-exporter = "*"
 
 [requires]
 python_version = "3.7"

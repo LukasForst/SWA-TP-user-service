@@ -46,3 +46,8 @@ All configuration can be overriden by setting same named env variable to differe
 This repo contains only simple pipelines - each commit to master is deployed to Docker Hub with `latest` tag
 and `/version` endpoint set. 
 This repo is using Github Actions.
+
+- each commit to any branch is checked - all python doc tests are executed
+- each commit to master creates new `:latest` version with proper version on `/version` endpoint
+- each release (Github button Create Release) creates version with release tag `:x.y.z` 
+and release number on `/version` endpoint

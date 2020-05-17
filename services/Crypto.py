@@ -14,6 +14,12 @@ def encode_password(password: str) -> str:
 
 
 def compare_passwords(pwd_hash: str, password: str) -> bool:
+    """
+    >>> compare_passwords(encode_password('hello'), 'hello')
+    True
+    >>> compare_passwords(encode_password('hello'), 'not hello')
+    False
+    """
     return bcrypt.check_password_hash(pwd_hash, password)
 
 

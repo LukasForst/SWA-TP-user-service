@@ -9,6 +9,9 @@ The auth is using well known method of JWTs.
 The passwords in the database are hashed using `bcrypt`.
 For persistence, this service has its own PostgreSQL database.
 
+## API
+To test API, one can use pregenerated Swagger UI running on `localhost:8080`.
+
 ## Monitoring
 The service contains `/metrics` endpoint for Prometheus scraping.
 This endpoint is enabled only when the service uses `gunicorn` as its server (i.e. while running in production/docker).

@@ -47,7 +47,8 @@ This repo contains only simple pipelines - each commit to master is deployed to 
 and `/version` endpoint set. 
 This repo is using Github Actions.
 
-- each commit to any branch is checked - all python doc tests are executed
+- each commit to any branch is checked - all python doc tests are executed, these tests
+are executed before every publish (`:latest` or `:x.y.z` release)
 - each commit to master creates new `:latest` version with proper version on `/version` endpoint
 - each release (Github button Create Release) creates version with release tag `:x.y.z` 
 and release number on `/version` endpoint

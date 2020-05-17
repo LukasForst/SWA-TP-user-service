@@ -1,6 +1,6 @@
 import logging
 
-from flask import jsonify, request
+from flask import jsonify, request, make_response
 from flask_restx import Namespace, Resource, fields
 
 from common.Db import db
@@ -53,13 +53,13 @@ class RegistrationApi(Resource):
                     'status': 'fail',
                     'message': 'Some error occurred. Please try again.'
                 }
-                return jsonify(responseObject)
+                return make_response(jsonify(responseObject), 502)
         else:
             responseObject = {
                 'status': 'fail',
                 'message': 'User already exists. Please Log in.',
             }
-            return jsonify(responseObject)
+            return make_response(jsonify(responseObject), 409)
 
 
 @user_api.route('/login', methods=['POST'])
@@ -92,7 +92,7 @@ class LoginApi(Resource):
                     'status': 'fail',
                     'message': 'User does not exist.'
                 }
-                return jsonify(responseObject)
+                return make_response(jsonify(responseObject), 401)
 
         except Exception as e:
             logger.error(e)
@@ -100,7 +100,7 @@ class LoginApi(Resource):
                 'status': 'fail',
                 'message': 'Try again'
             }
-            return jsonify(responseObject)
+            return make_response(jsonify(responseObject), 401)
 
 
 @user_api.route('', methods=['GET'])
@@ -124,7 +124,7 @@ class UserAPI(Resource):
                     'status': 'fail',
                     'message': 'Bearer token malformed.'
                 }
-                return jsonify(responseObject)
+                return make_response(jsonify(responseObject), 401)
         else:
             auth_token = ''
 
@@ -145,10 +145,10 @@ class UserAPI(Resource):
                 'status': 'fail',
                 'message': error
             }
-            return jsonify(responseObject)
+            return make_response(jsonify(responseObject), 401)
         else:
             responseObject = {
                 'status': 'fail',
                 'message': 'Provide a valid auth token.'
             }
-            return jsonify(responseObject)
+            return make_response(jsonify(responseObject), 401)

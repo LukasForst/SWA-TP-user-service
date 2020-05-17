@@ -18,11 +18,15 @@ To enable it, set env variable `JSON_LOGGING=true`.
 
 To enable deployment to Kubernetes, service contains `/status` endpoint for L7 load balancers and Ingress checks.
 
+This service also has complete monitoring of requests by utilizing request id generation and reading `X-Request-Id` 
+headers (can be found in `RequestId.py` file) - these ids are then logged with every log record 
+when using JSON logging.
+Thus this service is ready to be deployed to production level K8S cluster.
+
 ## Versioning
 The service contains `/version` endpoint which returns current build version - when using docker image from
 docker hub `lukaswire/swa-user-service` it returns SHA of the commit it was built on.
 When built locally, it returns `development` version.
-
 
 ## Deployment
 The service is distributed as single docker image using multistage docker build based on the

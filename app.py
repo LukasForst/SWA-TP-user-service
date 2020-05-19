@@ -71,7 +71,7 @@ def configure_apis(app):
 
 def configure_metrics(app):
     logger.debug("Initialize metrics")
-    init_metrics(app, get_version(), 'echo-roman')
+    init_metrics(app, get_version(), 'swa-user-service')
 
 
 # Create app

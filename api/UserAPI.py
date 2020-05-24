@@ -105,11 +105,19 @@ class LoginApi(Resource):
 
 @user_api.route('', methods=['GET'])
 class UserAPI(Resource):
-    status = user_api.model('UserInfo', {
-        'status': fields.String(required=True, description='Indication of successful auth..', enum=['fail', 'success'])
+    status = user_api.model('AuthMessage', {
+        'status': fields.String(required=True, description='Indication of successful auth..', enum=['fail', 'success']),
+        'message': fields.String(required=False, description='Message why request failed.')
     })
 
-    @user_api.response(code=200, model=status, description="Returns ok if service is healthy.")
+    user = user_api.model('User', {
+        'user_id': fields.String(required=True, description='Id of the user'),
+        'email': fields.String(required=True, description="User's email")
+    })
+
+    @user_api.response(code=200, model=user, description="Returns user information.")
+    @user_api.response(code=401, model=status,
+                       description="Returns message why it was not possible to fulfil request.")
     @user_api.doc(
         security='bearer'
     )
@@ -133,11 +141,8 @@ class UserAPI(Resource):
             if user_id:
                 user = User.query.filter_by(id=user_id).first()
                 responseObject = {
-                    'status': 'success',
-                    'data': {
-                        'user_id': user.id,
-                        'email': user.email
-                    }
+                    'user_id': user.id,
+                    'email': user.email
                 }
                 return jsonify(responseObject)
 
